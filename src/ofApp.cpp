@@ -157,7 +157,7 @@ void ofApp::keyPressed(int key) {
 	if (key == 'o') {
 		worldIndex--;
 	}
-	if (key == 'b') {
+	if (key == 'b') { 
 		float w = ofRandom(4, 20);
 		float h = ofRandom(4, 20);
 		boxesB.push_back(shared_ptr<ofxBox2dRect>(new ofxBox2dRect));
@@ -166,7 +166,7 @@ void ofApp::keyPressed(int key) {
 		boxesB.back().get()->setData(box2dArr[worldIndex * 2].getWorld());
 	}
 	if (key == 'r') {
-		float w = ofRandom(4, 20);
+		float w = ofRandom(4, 20); 
 		float h = ofRandom(4, 20);
 		boxesR.push_back(shared_ptr<ofxBox2dRect>(new ofxBox2dRect));
 		//boxes.back().get()->setPhysics(3.0, 0.53, 0.1);
