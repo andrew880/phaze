@@ -184,7 +184,7 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="..\..\..\of_v0.10.1_vs2017_release\of_v0.10.1_vs2017_release\addons\ofxBox2d-master\src\ofxBox2d.cpp" />

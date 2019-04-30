@@ -172,7 +172,7 @@
     <ClCompile Include="..\..\..\of_v0.10.1_vs2017_release\of_v0.10.1_vs2017_release\addons\ofxBox2d-master\libs\triangle\del_impl.cpp">
       <Filter>addons\ofxBox2d-master\libs\triangle</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
+    <ClCompile Include="Map.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
