@@ -102,7 +102,6 @@ void ofApp::playerInit() {
 	player = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
 	player.get()->setPhysics(8.0, 0.0, 1);
 	player.get()->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), kwidth / 2, kheight / 2, 25);
-	//player.get()->setFixedRotation(true);
 	player.get()->setData("p");
 }
 
@@ -141,7 +140,7 @@ void ofApp::boxBHCreate(int k, int x, int y)
 {
 	boxesB.push_back(shared_ptr<ofxBox2dRect>(new ofxBox2dRect));
 	boxesB.back().get()->setFriction(1);
-	boxesB.back().get()->setup(box2dArr[k * 2].getWorld(), x, y, kboxw, kboxh);
+	boxesB.back().get()->setup(box2dArr[k * 2].getWorld(), x, y, kboxHw, kboxHh);
 	boxesB.back().get()->setData(box2dArr[k * 2].getWorld());
 }
 
@@ -149,7 +148,7 @@ void ofApp::boxRHCreate(int k, int x, int y)
 {
 	boxesR.push_back(shared_ptr<ofxBox2dRect>(new ofxBox2dRect));
 	boxesR.back().get()->setFriction(1);
-	boxesR.back().get()->setup(box2dArr[k * 2 + 1].getWorld(), x, y, kboxw, kboxh);
+	boxesR.back().get()->setup(box2dArr[k * 2 + 1].getWorld(), x, y, kboxHw, kboxHh);
 	boxesR.back().get()->setData(box2dArr[k * 2 + 1].getWorld());
 }
 
@@ -157,7 +156,7 @@ void ofApp::boxBVCreate(int k, int x, int y)
 {
 	boxesB.push_back(shared_ptr<ofxBox2dRect>(new ofxBox2dRect));
 	boxesB.back().get()->setFriction(1);
-	boxesB.back().get()->setup(box2dArr[k * 2].getWorld(), x, y, kboxw, kboxh);
+	boxesB.back().get()->setup(box2dArr[k * 2].getWorld(), x, y, kboxVw, kboxVh);
 	boxesB.back().get()->setData(box2dArr[k * 2].getWorld());
 }
 
@@ -165,20 +164,21 @@ void ofApp::boxRVCreate(int k, int x, int y)
 {
 	boxesR.push_back(shared_ptr<ofxBox2dRect>(new ofxBox2dRect));
 	boxesR.back().get()->setFriction(1);
-	boxesR.back().get()->setup(box2dArr[k * 2 + 1].getWorld(), x, y, kboxw, kboxh);
+	boxesR.back().get()->setup(box2dArr[k * 2 + 1].getWorld(), x, y, kboxVw, kboxVh);
 	boxesR.back().get()->setData(box2dArr[k * 2 + 1].getWorld());
 }
 
 void ofApp::portalCreate(int x, int y, int k, int i)
 {
 	portals.push_back(shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle));
-	portals.back.get()->setup((box2dArr[k * 2 + i]).getWorld(), x, y, 35);
-	portals.back.get()->setFixedRotation(true);
+	portals.back().get()->setup((box2dArr[k * 2 + i]).getWorld(), x, y, 35);
+	portals.back().get()->setFixedRotation(true);
 }
 
 void ofApp::playerUpdate()
 {
 	ofVec2f v = player->getVelocity();
+	ofxBox2dCircle temp = *player;
 	player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), player->getPosition(), 25);
 	player->setVelocity(v);
 }
@@ -265,7 +265,6 @@ void ofApp::gotMessage(ofMessage msg) {
 
 void ofApp::contactStart(ofxBox2dContactArgs& e) {
 	if (e.a != NULL && e.b != NULL) {
-		s = "smt" + ofToString(e.a->GetUserData()) + ofToString(e.b->GetUserData());
 		if ((e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_polygon) || 
 			(e.b->GetType() == b2Shape::e_circle && e.a->GetType() == b2Shape::e_polygon)) {
 			grounded = true;
@@ -275,7 +274,9 @@ void ofApp::contactStart(ofxBox2dContactArgs& e) {
 		if (e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_circle) {
 			if (worldIndex + 1 < kworldCount / 2) {
 				worldIndex += 1;
-				playerUpdate();
+				update();
+				//ofxBox2dCircle temp = *player;
+				player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), player->getPosition().x, player->getPosition().y+50, 25);
 			} else if (worldIndex + 1 == kworldCount / 2) {
 				//worldIndex = 0;
 				//player->setup(box2dArr[worldIndex * 2 + (blue ? 0 : 1)].getWorld(), kwidth / 8, kheight - kheight / 8, 25);
