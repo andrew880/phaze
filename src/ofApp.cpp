@@ -24,6 +24,8 @@ void ofApp::setup() {
 	shifted = false;
 	worldIndex = 0;
 
+	update();
+
 	playerInit();
 	portalStartInit();
 	mapInit(map);
@@ -63,10 +65,10 @@ void ofApp::draw() {
 	for (int i = 0; i < portals.size(); i++) {
 		ofFill();
 		ofSetHexColor(0x3E00DB);
-	//	if (portals[i].get()->getWorld() == (&box2dArr[worldIndex * 2 + 1])->getWorld() ||
-		//	portals[i].get()->getWorld() == (&box2dArr[worldIndex * 2])->getWorld()) {
+		if (portals[i].get()->getWorld() == (&box2dArr[worldIndex * 2 + 1])->getWorld() ||
+			portals[i].get()->getWorld() == (&box2dArr[worldIndex * 2])->getWorld()) {
 			portals[i].get()->draw();
-		//}
+		}
 	}
 
 	ofSetHexColor(0xEEEEEE);
@@ -80,7 +82,7 @@ void ofApp::draw() {
 
 	string info = "";
 	info += "FPS: " + ofToString(ofGetFrameRate(), 1) + "\n";
-	info += "World Index: " + ofToString(worldIndex)+ "\n" + ofToString(player);
+	info += "Level: " + ofToString(worldIndex) + "\n";
 	ofSetHexColor(0xFFFFFF);
 	ofDrawBitmapString(info, 30, 30);
 	string instructions = "";
@@ -118,7 +120,7 @@ void ofApp::portalStartInit()
 // -blue || +red
 void ofApp::mapInit(vector<vector<char*>> map)
 {
-	for (int k = 0; k < kworldCount / 2; k++) {
+	for (int k = 0; k < kworldCount / 2 && k < map.size(); k++) {
 		for (int i = 0; i < map[k].size(); i++) {
 			for (int j = 0; map[k][i][j] != '\0'; j++) {
 				int x = j * kwidth / kMapHeight;
@@ -195,9 +197,12 @@ void ofApp::keyPressed(int key) {
 		blue = !blue;
 
 		ofVec2f v = player->getVelocity();
-		ofxBox2dCircle* temp = &*player;
+		ofxBox2dCircle temp = *player;
 		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), player->getPosition(), 25);
 		player->setVelocity(v);
+		b2Filter f = b2Filter();
+		f.groupIndex = (blue ? 0 : 1);
+		player->setFilterData(f);
 		//portalStart->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), portalStart->getPosition(), 25);
 		grounded = false;
 	}
@@ -250,8 +255,8 @@ void ofApp::gotMessage(ofMessage msg) {
 
 void ofApp::contactStart(ofxBox2dContactArgs& e) {
 	if (e.a != NULL && e.b != NULL) {
-		if ((e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_polygon) ||
-			(e.b->GetType() == b2Shape::e_circle && e.a->GetType() == b2Shape::e_polygon) ) {
+		s = "smt" + ofToString(e.a->GetUserData()) + ofToString(e.b->GetUserData());
+		if ((e.a->GetType() == b2Shape::e_circle || e.b->GetType() == b2Shape::e_circle)) {
 			grounded = true;
 			shifted = false;
 		}
@@ -260,10 +265,10 @@ void ofApp::contactStart(ofxBox2dContactArgs& e) {
 			if (worldIndex + 1 < kworldCount / 2) {
 				worldIndex += 1;
 				player->setup(box2dArr[worldIndex * 2 + (blue ? 0 : 1)].getWorld(), kwidth / 8, kheight - kheight / 8, 25);
-			}// else if (worldIndex + 1 == kworldCount / 2) {
+			} else if (worldIndex + 1 == kworldCount / 2) {
 				//worldIndex = 0;
 				//player->setup(box2dArr[worldIndex * 2 + (blue ? 0 : 1)].getWorld(), kwidth / 8, kheight - kheight / 8, 25);
-			//}
+			}
 		}
 	}
 }
