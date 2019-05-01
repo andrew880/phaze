@@ -91,19 +91,37 @@ void ofApp::draw() {
 	string info = "";
 	info += "FPS: " + ofToString(ofGetFrameRate(), 1) + "\n";
 	info += "Level: " + ofToString(worldIndex) + "\n";
+	if (worldIndex == 1)
+		info += "Tutorial\n";
 	ofSetHexColor(0xFFFFFF);
 	ofDrawBitmapString(info, 30, 30);
 	string instructions = "";
+	vector<string> tutorial = vector<string>(4);
 	if (worldIndex == 0) {
-		instructions += "	    Press [q] to switch dimensions\n";
+		instructions += "	    Press [SPACE] to switch dimensions\n";
 		instructions += "		  blue <-> light blue\n		   red <-> light red\n\n";
 		instructions += "		  Press [wasd] to move\n\n";
-		instructions += "Press [,] to shift to the small ball (goes to where you were)\n";
-		instructions += "		Small ball follows ur path\n\n";
+		instructions += "Press [<] to shift to the past (goes to the shadow)\n";
+		instructions += "		shadow follows ur path\n\n";
+		instructions += "Press [>] to shift to the future (goes to the opposite direction of the shadow)\n\n";
 		instructions += "	       Goal: Reach the purple portal\n";
-	}
-	ofSetHexColor(0xFFFFFF);
+		ofSetHexColor(0xFFFFFF);
 	ofDrawBitmapString(instructions, 750, 750);
+	}
+	else if (worldIndex == 1) {
+		tutorial[0] += "1:\nPress [SPACE] to switch dimensions\n";
+		tutorial[0] += "jump -> switch dimensions to be able \nto stand on different colors\n";
+		tutorial[1] += "2:\nPress [<] to shift to the past (goes to the shadow)\n";
+		tutorial[1] += "jump as high as possible -> drop down into the pit -> Press [<] when the ball reaching the top fly up";
+		tutorial[2] += "3:\nPress [>] to shift to the future (goes to the opposite direction of the shadow)\n";
+		tutorial[2] += "start from the right -> walk left -> Press [>] to teleport through the wall";
+		ofSetHexColor(0xFFFFFF);
+		ofDrawBitmapString(tutorial[0], 1650, 400);
+		ofSetHexColor(0xFFFFFF);
+		ofDrawBitmapString(tutorial[1], 1000, 100);
+		ofSetHexColor(0xFFFFFF);
+		ofDrawBitmapString(tutorial[2], 600, 1000);
+	}
 }
 
 //--------------------------------------------------------------
@@ -249,7 +267,7 @@ void ofApp::keyPressed(int key) {
 	if (key == 't') ofToggleFullscreen();
 
 	//movement controls
-	if ((key == 'w' || key == ' ') && grounded) {
+	if ((key == 'w') && grounded) {
 		player.get()->addForce(ofVec2f(0, -140), 100);
 		grounded = false;
 	}
@@ -264,7 +282,7 @@ void ofApp::keyPressed(int key) {
 	}
 	
 	//change dimension
-	if (key == 'q' && !shifted) {
+	if (key == ' ' && !shifted) {
 		shifted = true;
 		blue = !blue;
 		playerUpdate();
