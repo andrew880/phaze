@@ -37,6 +37,7 @@
 * add maps
 * add projecting player funtionality
 ------------
+* edit description of game in porposal
 * game balancing
 * additional levels/maps
 * add tutorial stage
