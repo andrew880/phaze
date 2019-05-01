@@ -6,11 +6,14 @@ void ofApp::setup() {
 	ofBackgroundHex(0x000000);
 	ofSetLogLevel(OF_LOG_NOTICE);
 
+	shadowWorld.init();
+	shadowWorld.setFPS(10.0);
+
 	box2dArr = vector<ofxBox2d>(kworldCount);
 	for (int i = 0; i < kworldCount; i++) {
 		box2dArr[i].init();
 		box2dArr[i].enableEvents();
-		box2dArr[i].setGravity(0, 10);
+		box2dArr[i].setGravity(0, 16);
 		box2dArr[i].createBounds();
 		box2dArr[i].setFPS(60.0);
 		box2dArr[i].registerGrabbing();
@@ -27,6 +30,7 @@ void ofApp::setup() {
 	update();
 
 	playerInit();
+	shadowInit();
 	mapInit(map);
 
 	update();
@@ -34,6 +38,8 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	shadowWorld.update();
+
 	box2dArr[worldIndex * 2].update();
 	box2dArr[worldIndex * 2 + 1].update();
 }
@@ -75,6 +81,12 @@ void ofApp::draw() {
 	ofSetHexColor(0xEEEEEE);
 	player->draw();
 
+	ofSetHexColor(0x999999);
+	shadowUpdate();
+	for (int i = 0; i < shadows.size(); i++) {
+		shadows[i].get()->draw();
+	}
+
 	// draw current ground
 	box2dArr[worldIndex * 2 + (blue ? 0 : 1)].drawGround();
 
@@ -102,7 +114,16 @@ void ofApp::playerInit() {
 	player = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
 	player.get()->setPhysics(8.0, 0.0, 1);
 	player.get()->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), kwidth / 2, kheight / 2, 25);
-	player.get()->setData("p");
+}
+
+void ofApp::shadowInit()
+{
+	shadowPos = vector<ofVec2f>();
+	for (int i = 0; i < kshadowFrameCounts; i++) {
+		shadows.push_back(shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle));
+		shadows.back().get()->setup(shadowWorld.getWorld(), kwidth / 2, kheight / 2, 12);
+	}
+	
 }
 
 // -blue || +red
@@ -183,6 +204,25 @@ void ofApp::playerUpdate()
 	player->setVelocity(v);
 }
 
+void ofApp::shadowUpdate()
+{
+	shadowPos.insert(shadowPos.begin(), player->getPosition());
+	if (shadowPos.size() >= kshadowFrameCounts) {
+		shadowPos.pop_back();
+	}
+	//ofVec2f pos = ofVec2f(0, 0);
+	for (int i = 0; i < shadowPos.size(); i++) {
+		//pos = ofVec2f(pos.x + shadowPos[i].x, pos.y + shadowPos[i].y);
+		shadows[i]->setPosition(shadowPos[i]);
+		shadows[i]->setRadius(10 - 5 * i / kshadowFrameCounts);
+	}
+	//shadow->setPosition(pos.x / shadowPos.size(), pos.y / shadowPos.size());
+	if (shadowPos.size() > 0) {
+		shadows[shadows.size() - 1]->setRadius(15);
+		shadows[shadows.size() - 1]->setPosition(shadowPos[shadowPos.size() - 1]);
+	}
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
 
@@ -193,21 +233,30 @@ void ofApp::keyPressed(int key) {
 		worldIndex--;
 	}
 
+	if (key == ',' && !projected) {
+		projected = true;
+		ofVec2f v = ofVec2f((shadows[shadows.size() - 1]->getPosition().x - player->getPosition().x) / kvelScale, 
+			(shadows[shadows.size() - 1]->getPosition().y - player->getPosition().y) / kvelScale);
+		ofxBox2dCircle temp = *player;
+		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), shadows[shadows.size() - 1]->getPosition(), 25);
+		player->setVelocity(v);
+	}
+
 	if (key == 't') ofToggleFullscreen();
 
 	//movement controls
 	if ((key == 'w' || key == ' ') && grounded) {
-		player.get()->addForce(ofVec2f(0, -100), 100);
+		player.get()->addForce(ofVec2f(0, -150), 100);
 		grounded = false;
 	}
 	if (key == 's') {
 		player.get()->addForce(ofVec2f(0, 10), 100);
 	}
 	if (key == 'd') {
-		player.get()->setVelocity(10, player->getVelocity().y);
+		player.get()->setVelocity(8, player->getVelocity().y);
 	}
 	if (key == 'a') {
-		player.get()->setVelocity(-10, player->getVelocity().y);
+		player.get()->setVelocity(-8, player->getVelocity().y);
 	}
 	
 	//change dimension
@@ -269,6 +318,7 @@ void ofApp::contactStart(ofxBox2dContactArgs& e) {
 			(e.b->GetType() == b2Shape::e_circle && e.a->GetType() == b2Shape::e_polygon)) {
 			grounded = true;
 			shifted = false;
+			projected = false;
 		}
 		//teleport to next level
 		if (e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_circle) {
