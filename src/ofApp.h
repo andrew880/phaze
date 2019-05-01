@@ -17,7 +17,7 @@ class ofApp : public ofBaseApp{
 		static const int kboxVh = 80;
 		static const int kworldCount = 10;
 		static const int kshadowFrameCounts = 100;
-		static const int kvelScale = 30;
+		static const int kvelScale = 40;
 
 		vector	<ofxBox2d>						box2dArr; //world arr
 		ofxBox2d								shadowWorld; //shadow world
@@ -26,10 +26,10 @@ class ofApp : public ofBaseApp{
 		vector	<shared_ptr<ofxBox2dRect> >		boxesR;   // defalut red rects
 		vector	<shared_ptr<ofxBox2dCircle> >	portals; //portal circle
 
-		vector	<ofVec2f>						shadowPos;
+		vector	<ofVec2f>					shadowPos;
 
-		shared_ptr<ofxBox2dCircle>				player;
-		vector <shared_ptr<ofxBox2dCircle> >	shadows;
+		shared_ptr<ofxBox2dCircle> player;
+		shared_ptr<ofxBox2dCircle> shadow;
 		
 		bool blue = true;
 		bool grounded = true;

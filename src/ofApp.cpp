@@ -83,9 +83,7 @@ void ofApp::draw() {
 
 	ofSetHexColor(0x999999);
 	shadowUpdate();
-	for (int i = 0; i < shadows.size(); i++) {
-		shadows[i].get()->draw();
-	}
+	shadow->draw();
 
 	// draw current ground
 	box2dArr[worldIndex * 2 + (blue ? 0 : 1)].drawGround();
@@ -119,11 +117,8 @@ void ofApp::playerInit() {
 void ofApp::shadowInit()
 {
 	shadowPos = vector<ofVec2f>();
-	for (int i = 0; i < kshadowFrameCounts; i++) {
-		shadows.push_back(shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle));
-		shadows.back().get()->setup(shadowWorld.getWorld(), kwidth / 2, kheight / 2, 12);
-	}
-	
+	shadow = shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle);
+	shadow.get()->setup(shadowWorld.getWorld(), kwidth / 2, kheight / 2, 15);
 }
 
 // -blue || +red
@@ -206,20 +201,18 @@ void ofApp::playerUpdate()
 
 void ofApp::shadowUpdate()
 {
-	shadowPos.insert(shadowPos.begin(), player->getPosition());
-	if (shadowPos.size() >= kshadowFrameCounts) {
-		shadowPos.pop_back();
-	}
-	//ofVec2f pos = ofVec2f(0, 0);
-	for (int i = 0; i < shadowPos.size(); i++) {
-		//pos = ofVec2f(pos.x + shadowPos[i].x, pos.y + shadowPos[i].y);
-		shadows[i]->setPosition(shadowPos[i]);
-		shadows[i]->setRadius(10 - 5 * i / kshadowFrameCounts);
-	}
-	//shadow->setPosition(pos.x / shadowPos.size(), pos.y / shadowPos.size());
-	if (shadowPos.size() > 0) {
-		shadows[shadows.size() - 1]->setRadius(15);
-		shadows[shadows.size() - 1]->setPosition(shadowPos[shadowPos.size() - 1]);
+	if (shadow != NULL) {
+		shadowPos.insert(shadowPos.begin(), player->getPosition());
+		if (shadowPos.size() >= kshadowFrameCounts) {
+			shadowPos.pop_back();
+		}
+		ofVec2f pos = ofVec2f(0, 0);
+		for (int i = 0; i < shadowPos.size(); i++) {
+			pos = ofVec2f(pos.x + shadowPos[i].x, pos.y + shadowPos[i].y);
+		}
+		//shadow->setPosition(pos.x / shadowPos.size(), pos.y / shadowPos.size());
+		if (shadowPos.size() > 0)
+			shadow->setPosition(shadowPos[shadowPos.size() - 1]);
 	}
 }
 
@@ -235,10 +228,9 @@ void ofApp::keyPressed(int key) {
 
 	if (key == ',' && !projected) {
 		projected = true;
-		ofVec2f v = ofVec2f((shadows[shadows.size() - 1]->getPosition().x - player->getPosition().x) / kvelScale, 
-			(shadows[shadows.size() - 1]->getPosition().y - player->getPosition().y) / kvelScale);
+		ofVec2f v = ofVec2f((shadow->getPosition().x - player->getPosition().x) / kvelScale, (shadow->getPosition().y - player->getPosition().y) / kvelScale);
 		ofxBox2dCircle temp = *player;
-		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), shadows[shadows.size() - 1]->getPosition(), 25);
+		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), shadow->getPosition(), 25);
 		player->setVelocity(v);
 	}
 
