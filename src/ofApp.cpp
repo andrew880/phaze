@@ -7,7 +7,7 @@ void ofApp::setup() {
 	ofSetLogLevel(OF_LOG_NOTICE);
 
 	shadowWorld.init();
-	shadowWorld.setFPS(10.0);
+	shadowWorld.setFPS(60.0);
 
 	box2dArr = vector<ofxBox2d>(kworldCount);
 	for (int i = 0; i < kworldCount; i++) {
@@ -95,16 +95,15 @@ void ofApp::draw() {
 	ofDrawBitmapString(info, 30, 30);
 	string instructions = "";
 	if (worldIndex == 0) {
-		instructions += "Press [q] to switch dimensions\n";
-		if(!blue) {
-			instructions += "Press [wasd] to move\n";
-			instructions += "You can stand on dark red & blue; but not light red & blue\n";
-			instructions += "if you switch, you can switch the colors of red and blue to stand on different things\n";
-			instructions += "\n\nGoal: Reach the purple portal\n";
-		}
+		instructions += "	    Press [q] to switch dimensions\n";
+		instructions += "		  blue <-> light blue\n		   red <-> light red\n\n";
+		instructions += "		  Press [wasd] to move\n\n";
+		instructions += "Press [,] to shift to the small ball (goes to where you were)\n";
+		instructions += "		Small ball follows ur path\n\n";
+		instructions += "	       Goal: Reach the purple portal\n";
 	}
 	ofSetHexColor(0xFFFFFF);
-	ofDrawBitmapString(instructions, 800, 300);
+	ofDrawBitmapString(instructions, 750, 750);
 }
 
 //--------------------------------------------------------------
@@ -127,8 +126,8 @@ void ofApp::mapInit(vector<vector<char*>> map)
 	for (int k = 0; k < kworldCount / 2 && k < map.size(); k++) {
 		for (int i = 0; i < map[k].size(); i++) {
 			for (int j = 0; map[k][i][j] != '\0'; j++) {
-				int x = j * kwidth / kMapHeight;
-				int y = i * kheight / kMapWidth;
+				double x = j * (double)kwidth / kMapHeight;
+				double y = i * (double)kheight / kMapWidth;
 				if (map[k][i][j] == '-') {
 					boxBHCreate(k, x, y);
 				} else if (map[k][i][j] == '+') {
@@ -141,10 +140,10 @@ void ofApp::mapInit(vector<vector<char*>> map)
 					portalCreate(x, y, k, 0);
 					portalCreate(x, y, k, 1);
 				} else if (map[k][i][j] == '_') {
-					boxBHCreate(k, x, y);
+					boxBHCreate(k, x, y - kboxHh * 2.0 / 3);
 					boxRHCreate(k, x, y);
 				} else if (map[k][i][j] == '|') {
-					boxBVCreate(k, x, y);
+					boxBVCreate(k, x + kboxVw * 2.0 / 3, y);
 					boxRVCreate(k, x, y);
 				}
 			}
@@ -233,12 +232,25 @@ void ofApp::keyPressed(int key) {
 		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), shadow->getPosition(), 25);
 		player->setVelocity(v);
 	}
+	if (key == '.' && !projected) {
+		projected = true;
+		ofxBox2dCircle temp = *player;
+
+		int x = 2 * player->getPosition().x - shadow->getPosition().x;
+		x = x > kwidth ? kwidth - 50 : ((x < 50) ? 50 : x);
+		int y = 2 * player->getPosition().y - shadow->getPosition().y;
+		y = y > kheight ? kheight - 50 : ((y < 50) ? 50 : y);
+
+		ofVec2f v = ofVec2f((x - player->getPosition().x) / kvelScale, (y- player->getPosition().y) / kvelScale);
+		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), ofVec2f(x,y), 25);
+		player->setVelocity(v);
+	}
 
 	if (key == 't') ofToggleFullscreen();
 
 	//movement controls
 	if ((key == 'w' || key == ' ') && grounded) {
-		player.get()->addForce(ofVec2f(0, -150), 100);
+		player.get()->addForce(ofVec2f(0, -140), 100);
 		grounded = false;
 	}
 	if (key == 's') {
