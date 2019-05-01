@@ -36,6 +36,10 @@
 ------------
 * add maps
 * add projecting player funtionality
+* add shadow follower
+* add shadow traces
+* disable shadow traces
+* add projecting player both ways
 ------------
 * edit description of game in porposal
 * game balancing
