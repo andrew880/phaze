@@ -120,7 +120,7 @@ void ofApp::draw() {
 		ofSetHexColor(0xFFFFFF);
 		ofDrawBitmapString(tutorial[1], 1000, 100);
 		ofSetHexColor(0xFFFFFF);
-		ofDrawBitmapString(tutorial[2], 600, 1000);
+		ofDrawBitmapString(tutorial[2], 950, 1000);
 	}
 }
 
