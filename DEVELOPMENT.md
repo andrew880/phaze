@@ -33,3 +33,13 @@
 * fix collisions
 * add map(world) transitions
 * create maps layout
+------------
+* add maps
+* add projecting player funtionality
+------------
+* game balancing
+* additional levels/maps
+* add tutorial stage
+* edit texts guidance
+* add more levels/maps
+* game balancing
