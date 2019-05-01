@@ -101,9 +101,9 @@ void ofApp::draw() {
 		instructions += "	    Press [SPACE] to switch dimensions\n";
 		instructions += "		  blue <-> light blue\n		   red <-> light red\n\n";
 		instructions += "		  Press [wasd] to move\n\n";
-		instructions += "Press [<] to shift to the past (goes to the shadow)\n";
+		instructions += "   Press [<] to shift to the past (goes to the shadow)\n";
 		instructions += "		shadow follows ur path\n\n";
-		instructions += "Press [>] to shift to the future (goes to the opposite direction of the shadow)\n\n";
+		instructions += "	   Press [>] to shift to the future\n    (goes to the opposite direction of the shadow)\n\n";
 		instructions += "	       Goal: Reach the purple portal\n";
 		ofSetHexColor(0xFFFFFF);
 	ofDrawBitmapString(instructions, 750, 750);
