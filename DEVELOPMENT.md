@@ -56,3 +56,7 @@
 * switch map order
 * final testing
 ------------
+* finalize porposal
+* finalize game instructions/mechanics
+* finalize game maps
+* finalize game
