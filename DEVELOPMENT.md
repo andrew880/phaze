@@ -48,3 +48,9 @@
 * edit texts guidance
 * add more levels/maps
 * game balancing
+------------
+* add hints
+* game balancing
+* switch map order
+* final testing
+------------
