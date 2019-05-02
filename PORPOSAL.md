@@ -26,20 +26,24 @@ Player travels on the endless edge of the two dimensions
   * 'd' - right
   
   #### Phasing
-  * ' ' - shift through the dimensions of blue and red
+  * '/' - shift through the dimensions of blue and red
   > by shifting through the dimensions, the player could stand on or utilize different map objects with different color.
   
   #### Time Projecting
   >There is a tiny grey shadow following the player. The grey shadow will walk the path that the player had taken, thus recording the past.
-  * '<' - go back in time / projecting to the past
+  * '<' (also the ',' key) - go back in time / projecting to the past
   > by going back in time, the player will return to its position a certain amount of time ago. The amount of time will be indicated by the shadow that follows you.
   >> player will be teleported to position of the shadow
   >> after reaching the position, the player will recieve a velocity in the direction of the player to the shadow.
   >> the further the player is from the ball, the faster, vice versa
   
-  
-  * '>' - go forward in time / project your character to the future
+  * '>' (also the '.' key) - go forward in time / project your character to the future
   > by projectiong into the future, the player will teleport in the opposite way the player had traveled, indicated by the shadow.
   >> player will the teleported to a direction opposite of direction to the shadow
   >> so instead of teleporting to the shadow by projecting to the past, it teleports the player to the opposite direction
+  
+   #### Hints
+   * 'h' - hints
+   > well, if you need help, there are some hints for some of the levels.
+   
 
