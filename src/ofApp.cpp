@@ -39,7 +39,6 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	shadowWorld.update();
-
 	box2dArr[worldIndex * 2].update();
 	box2dArr[worldIndex * 2 + 1].update();
 }
@@ -91,25 +90,24 @@ void ofApp::draw() {
 	string info = "";
 	info += "FPS: " + ofToString(ofGetFrameRate(), 1) + "\n";
 	info += "Level: " + ofToString(worldIndex) + "\n";
-	if (worldIndex == 1)
-		info += "Tutorial\n";
 	ofSetHexColor(0xFFFFFF);
 	ofDrawBitmapString(info, 30, 30);
-	string instructions = "";
-	vector<string> tutorial = vector<string>(4);
+	string hints = "";
 	if (worldIndex == 0) {
-		instructions += "	    Press [SPACE] to switch dimensions\n";
+		string instructions = "";
+		instructions += "	    Press [/] to switch dimensions\n";
 		instructions += "		  blue <-> light blue\n		   red <-> light red\n\n";
 		instructions += "		  Press [wasd] to move\n\n";
 		instructions += "   Press [<] to shift to the past (goes to the shadow)\n";
 		instructions += "		shadow follows ur path\n\n";
 		instructions += "	   Press [>] to shift to the future\n    (goes to the opposite direction of the shadow)\n\n";
+		instructions += "		  Press [h] to get hints\n";
 		instructions += "	       Goal: Reach the purple portal\n";
 		ofSetHexColor(0xFFFFFF);
 	ofDrawBitmapString(instructions, 750, 750);
-	}
-	else if (worldIndex == 1) {
-		tutorial[0] += "1:\nPress [SPACE] to switch dimensions\n";
+	} else if (worldIndex == 4 && hint) {
+		vector<string> tutorial = vector<string>(4);
+		tutorial[0] += "1:\nPress [/] to switch dimensions\n";
 		tutorial[0] += "jump -> switch dimensions to be able \nto stand on different colors\n";
 		tutorial[1] += "2:\nPress [<] to shift to the past (goes to the shadow)\n";
 		tutorial[1] += "jump as high as possible -> drop down into the pit -> Press [<] when the ball reaching the top fly up";
@@ -121,7 +119,18 @@ void ofApp::draw() {
 		ofDrawBitmapString(tutorial[1], 1000, 100);
 		ofSetHexColor(0xFFFFFF);
 		ofDrawBitmapString(tutorial[2], 950, 1000);
+	} else if (worldIndex == 1 && hint) {
+		hints += "hint:\n";
+		hints += "use [/] to shift between colors to climb\n";
+	} else if (worldIndex == 2 && hint) {
+		hints += "hint:\n";
+		hints += "use [>] to project yourself through walls\n";
+	} else if (worldIndex == 3 && hint) {
+		hints += "hint:\n";
+		hints += "use [<] & [>] to project yourself upwards and recover from falls\n";
 	}
+	ofSetHexColor(0xFFFFFF);
+	ofDrawBitmapString(hints, 100, 100);
 }
 
 //--------------------------------------------------------------
@@ -227,7 +236,6 @@ void ofApp::shadowUpdate()
 		for (int i = 0; i < shadowPos.size(); i++) {
 			pos = ofVec2f(pos.x + shadowPos[i].x, pos.y + shadowPos[i].y);
 		}
-		//shadow->setPosition(pos.x / shadowPos.size(), pos.y / shadowPos.size());
 		if (shadowPos.size() > 0)
 			shadow->setPosition(shadowPos[shadowPos.size() - 1]);
 	}
@@ -245,7 +253,8 @@ void ofApp::keyPressed(int key) {
 
 	if (key == ',' && !projected) {
 		projected = true;
-		ofVec2f v = ofVec2f((shadow->getPosition().x - player->getPosition().x) / kvelScale, (shadow->getPosition().y - player->getPosition().y) / kvelScale);
+		ofVec2f v = ofVec2f((shadow->getPosition().x - player->getPosition().x) / kvelScale, 
+			(shadow->getPosition().y - player->getPosition().y) / kvelScale);
 		ofxBox2dCircle temp = *player;
 		player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), shadow->getPosition(), 25);
 		player->setVelocity(v);
@@ -264,7 +273,9 @@ void ofApp::keyPressed(int key) {
 		player->setVelocity(v);
 	}
 
-	if (key == 't') ofToggleFullscreen();
+	if (key == 'h') {
+		hint = true;
+	}
 
 	//movement controls
 	if ((key == 'w') && grounded) {
@@ -282,7 +293,7 @@ void ofApp::keyPressed(int key) {
 	}
 	
 	//change dimension
-	if (key == ' ' && !shifted) {
+	if (key == '/' && !shifted) {
 		shifted = true;
 		blue = !blue;
 		playerUpdate();
@@ -343,16 +354,13 @@ void ofApp::contactStart(ofxBox2dContactArgs& e) {
 			projected = false;
 		}
 		//teleport to next level
-		if (e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_circle) {
-			if (worldIndex + 1 < kworldCount / 2) {
-				worldIndex += 1;
-				update();
-				//ofxBox2dCircle temp = *player;
-				player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), player->getPosition().x, player->getPosition().y+50, 25);
-			} else if (worldIndex + 1 == kworldCount / 2) {
-				//worldIndex = 0;
-				//player->setup(box2dArr[worldIndex * 2 + (blue ? 0 : 1)].getWorld(), kwidth / 8, kheight - kheight / 8, 25);
-			}
+		if (e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_circle &&
+			worldIndex + 1 < kworldCount / 2) {
+			worldIndex += 1;
+			hint = false;
+			update();
+			player->setup((box2dArr[worldIndex * 2 + (blue ? 0 : 1)]).getWorld(), 
+				player->getPosition().x, player->getPosition().y + 50, 25);
 		}
 	}
 }
