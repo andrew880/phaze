@@ -25,6 +25,7 @@
 * create jumping and movement machanics
 ------------
 * modify porposal to fit game
+* rewrite explaination of game machanics
 ------------
 * add movements
 * add collisions
@@ -51,6 +52,7 @@
 ------------
 * add hints
 * game balancing
+* modify porposal instructions
 * switch map order
 * final testing
 ------------
